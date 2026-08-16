@@ -284,7 +284,9 @@ export function sortTasks(tasks: Task[], day = todayISO()): Task[] {
     if (a.priority !== b.priority) return a.priority - b.priority;
     if (a.due && b.due && a.due !== b.due) return a.due < b.due ? -1 : 1;
     if (Boolean(a.due) !== Boolean(b.due)) return a.due ? -1 : 1;
-    return a.order - b.order;
+    // Newest first among otherwise-equal tasks — something you just added
+    // belongs at the top of its group, not buried under everything older.
+    return b.order - a.order;
   });
 }
 

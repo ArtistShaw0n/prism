@@ -1,9 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    To-Do — Liquid Glass design system
 
-   Deliberately small. One list in one container, a completed section, and an
-   input. The window is transparent and backed by a real NSVisualEffectView, so
-   every surface here is a translucent layer on top of genuine system material.
+   One column of cards that expand in place for editing. The window is
+   transparent and backed by a real NSVisualEffectView, so every surface here is
+   a translucent layer on top of genuine system material.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 *,
@@ -34,49 +34,80 @@ svg {
   --blue: #0a84ff;
   --purple: #bf5af2;
   --pink: #ff375f;
+  --orange: #ff9f0a;
   --teal: #64d2ff;
   --green: #30d158;
   --tint: var(--blue);
 
   --r-card: 14px;
-  --r-control: 10px;
+  --r-control: 9px;
   --r-pill: 999px;
 
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
-  --fast: 140ms var(--ease);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --fast: 150ms var(--ease);
 
   /* Light.
-     Cards sit near-opaque white: at 0.6 the blurred aurora bled through and
+     Cards sit near-opaque: at 0.6 the blurred aurora bled through and
      desaturated them to grey, so they stopped reading as raised surfaces. */
   --text-1: rgba(0, 0, 0, 0.88);
   --text-2: rgba(0, 0, 0, 0.52);
   --text-3: rgba(0, 0, 0, 0.32);
   --glass: rgba(255, 255, 255, 0.84);
-  --glass-strong: rgba(255, 255, 255, 0.92);
+  --glass-strong: rgba(255, 255, 255, 0.93);
   --glass-hover: rgba(255, 255, 255, 0.97);
-  --check-ring: rgba(0, 0, 0, 0.26);
+  --field: rgba(0, 0, 0, 0.035);
+  --check-ring: rgba(0, 0, 0, 0.24);
   --stroke: rgba(0, 0, 0, 0.07);
   --stroke-bright: rgba(255, 255, 255, 0.9);
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.06), 0 6px 20px rgba(0, 0, 0, 0.07);
-  --shadow-pop: 0 12px 48px rgba(0, 0, 0, 0.16);
-  --aurora-alpha: 0.38;
+  --shadow-card: 0 1px 1px rgba(0, 0, 0, 0.04), 0 4px 14px rgba(0, 0, 0, 0.055);
+  --shadow-pop: 0 8px 40px rgba(0, 0, 0, 0.15);
+  --card-filter: blur(20px) saturate(108%);
+  --aurora-alpha: 0.4;
+  --web-bg: #f1f1f5;
 }
 
+/* Dark tokens are declared twice on purpose: once for the system preference
+   (unless light was explicitly chosen) and once for an explicit dark choice, so
+   the in-app toggle wins in both directions. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --text-1: rgba(255, 255, 255, 0.93);
     --text-2: rgba(255, 255, 255, 0.55);
     --text-3: rgba(255, 255, 255, 0.34);
-    --glass: rgba(44, 44, 48, 0.52);
-    --glass-strong: rgba(52, 52, 58, 0.68);
-    --glass-hover: rgba(64, 64, 70, 0.7);
-    --check-ring: rgba(255, 255, 255, 0.32);
+    --glass: rgba(46, 46, 51, 0.58);
+    --glass-strong: rgba(54, 54, 60, 0.74);
+    --glass-hover: rgba(66, 66, 73, 0.76);
+    --field: rgba(255, 255, 255, 0.06);
+    --check-ring: rgba(255, 255, 255, 0.3);
     --stroke: rgba(255, 255, 255, 0.08);
-    --stroke-bright: rgba(255, 255, 255, 0.11);
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.28);
-    --shadow-pop: 0 12px 48px rgba(0, 0, 0, 0.5);
-    --aurora-alpha: 0.42;
+    --stroke-bright: rgba(255, 255, 255, 0.1);
+    /* Softer and wider than before — the old tight, dark shadow read as a hard
+       band under every card rather than as depth. */
+    --shadow-card: 0 1px 1px rgba(0, 0, 0, 0.16), 0 6px 22px rgba(0, 0, 0, 0.22);
+    --shadow-pop: 0 8px 40px rgba(0, 0, 0, 0.45);
+    --card-filter: blur(24px) saturate(180%);
+    --aurora-alpha: 0.44;
+    --web-bg: #15151a;
   }
+}
+
+:root[data-theme='dark'] {
+  --text-1: rgba(255, 255, 255, 0.93);
+  --text-2: rgba(255, 255, 255, 0.55);
+  --text-3: rgba(255, 255, 255, 0.34);
+  --glass: rgba(46, 46, 51, 0.58);
+  --glass-strong: rgba(54, 54, 60, 0.74);
+  --glass-hover: rgba(66, 66, 73, 0.76);
+  --field: rgba(255, 255, 255, 0.06);
+  --check-ring: rgba(255, 255, 255, 0.3);
+  --stroke: rgba(255, 255, 255, 0.08);
+  --stroke-bright: rgba(255, 255, 255, 0.1);
+  --shadow-card: 0 1px 1px rgba(0, 0, 0, 0.16), 0 6px 22px rgba(0, 0, 0, 0.22);
+  --shadow-pop: 0 8px 40px rgba(0, 0, 0, 0.45);
+  --card-filter: blur(24px) saturate(180%);
+  --aurora-alpha: 0.44;
+  --web-bg: #15151a;
 }
 
 body {
@@ -95,10 +126,7 @@ body {
 
 /* Outside Tauri there is no vibrancy behind the transparent body, so the
    browser preview needs its own ground. Set by main.tsx; never on in the app. */
-:root[data-web] body { background: #f2f2f7; }
-@media (prefers-color-scheme: dark) {
-  :root[data-web] body { background: #16161a; }
-}
+:root[data-web] body { background: var(--web-bg); }
 
 /* ── Aurora ───────────────────────────────────────────────────────────────── */
 
@@ -108,7 +136,7 @@ body {
   z-index: 0;
   pointer-events: none;
   opacity: var(--aurora-alpha);
-  filter: blur(72px) saturate(140%);
+  filter: blur(76px) saturate(150%);
 }
 
 .aurora span {
@@ -118,24 +146,31 @@ body {
 }
 
 .aurora span:nth-child(1) {
-  width: 70vw; height: 70vw; top: -10%; left: -20%;
+  width: 68vw; height: 68vw; top: -12%; left: -22%;
   background: radial-gradient(circle, var(--blue) 0%, transparent 68%);
   animation: drift-a 34s var(--ease) infinite alternate;
 }
 .aurora span:nth-child(2) {
-  width: 62vw; height: 62vw; top: 20%; right: -24%;
+  width: 60vw; height: 60vw; top: 14%; right: -24%;
   background: radial-gradient(circle, var(--purple) 0%, transparent 68%);
   animation: drift-b 41s var(--ease) infinite alternate;
 }
 .aurora span:nth-child(3) {
-  width: 58vw; height: 58vw; bottom: -14%; left: 6%;
+  width: 56vw; height: 56vw; bottom: -16%; left: 2%;
   background: radial-gradient(circle, var(--pink) 0%, transparent 70%);
   animation: drift-c 47s var(--ease) infinite alternate;
+}
+/* Fourth stop — warms the palette so it isn't only cool blues and pinks. */
+.aurora span:nth-child(4) {
+  width: 46vw; height: 46vw; bottom: 6%; right: -12%;
+  background: radial-gradient(circle, var(--orange) 0%, transparent 70%);
+  animation: drift-d 53s var(--ease) infinite alternate;
 }
 
 @keyframes drift-a { to { transform: translate3d(10vw, 8vh, 0) scale(1.16); } }
 @keyframes drift-b { to { transform: translate3d(-8vw, 10vh, 0) scale(1.1); } }
 @keyframes drift-c { to { transform: translate3d(8vw, -8vh, 0) scale(1.2); } }
+@keyframes drift-d { to { transform: translate3d(-9vw, -6vh, 0) scale(1.24); } }
 
 @media (prefers-reduced-motion: reduce) {
   .aurora span { animation: none; }
@@ -169,6 +204,10 @@ body {
 
 .sheet-head {
   flex: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
   padding: 0 2px 14px;
 }
 
@@ -184,6 +223,29 @@ body {
   font-size: 12px;
   color: var(--text-2);
 }
+
+.theme-btn {
+  -webkit-app-region: no-drag;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 10px 0 8px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--glass);
+  box-shadow: inset 0 0 0 1px var(--stroke-bright), var(--shadow-card);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: default;
+  transition: background var(--fast), color var(--fast);
+}
+
+.theme-btn:hover { background: var(--glass-hover); color: var(--text-1); }
+.theme-btn svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.5;
+  stroke-linecap: round; stroke-linejoin: round; }
 
 /* The negative margin lets the scrollbar sit out in the sheet's own padding,
    while padding-right keeps the cards clear of it. Card edges therefore line up
@@ -204,18 +266,15 @@ body {
   gap: 6px;
 }
 
-/* The project chip already carries the project's colour. A coloured spine as
-   well was the same information twice, and read as a heavy bar down every
-   card — so colour lives in one place only. */
 .task {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 11px 14px;
+  padding: 11px 13px;
   border-radius: var(--r-card);
   background: var(--glass);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: var(--card-filter);
+  -webkit-backdrop-filter: var(--card-filter);
   box-shadow: inset 0 0 0 1px var(--stroke-bright), var(--shadow-card);
   transition: background var(--fast);
 }
@@ -225,11 +284,27 @@ body {
 .task[data-done='true'] { opacity: 0.5; }
 .task[data-done='true']:hover { opacity: 0.75; }
 
+.task-editing {
+  background: var(--glass-strong);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--tint) 55%, transparent),
+    var(--shadow-pop);
+}
+
 .task-main { flex: 1; min-width: 0; }
+
+/* Title and the right-hand column share one row, so the space beside a short
+   title is used rather than left blank. */
+.task-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
 
 /* Explicit line-height so the checkbox can be centred on the first line
    deterministically rather than by eye. */
 .task-title {
+  flex: 1;
+  min-width: 0;
   font-size: 13.5px;
   line-height: 19px;
   font-weight: 500;
@@ -245,6 +320,30 @@ body {
   text-decoration-color: var(--text-3);
 }
 
+.task-side {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 19px;
+}
+
+.prio-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.task-due {
+  font-size: 11.5px;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.task-due[data-late='true'] { color: var(--pink); }
+
 .task-notes {
   margin-top: 4px;
   font-size: 12px;
@@ -258,9 +357,55 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   margin-top: 8px;
 }
+
+/* ── Checkbox ─────────────────────────────────────────────────────────────── */
+
+/* A real border rather than an inset box-shadow: on a 50% radius the shadow
+   ring aliases visibly, which is what made the circle look ragged.
+   Sized and offset so its centre lands on the centre of the title's first
+   line (19px line box, 17px control → 1px of top margin). */
+.check {
+  position: relative;
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
+  flex: none;
+  padding: 0;
+  border: 1.5px solid var(--check-ring);
+  border-radius: 50%;
+  background: transparent;
+  cursor: default;
+  transition: border-color var(--fast), background var(--fast), transform 180ms var(--spring);
+}
+
+.check:hover { border-color: var(--tint); }
+.check:active { transform: scale(0.9); }
+
+.check[data-done='true'] {
+  border-color: var(--green);
+  background: var(--green);
+}
+
+.check svg {
+  position: absolute;
+  inset: -1.5px; /* cancel the border so the glyph centres on the circle */
+  margin: auto;
+  width: 11px;
+  height: 11px;
+  stroke: #fff;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 120ms var(--ease), transform 220ms var(--spring);
+}
+
+.check[data-done='true'] svg { opacity: 1; transform: scale(1); }
 
 /* ── Chips ────────────────────────────────────────────────────────────────── */
 
@@ -286,45 +431,161 @@ body {
   background: currentColor;
 }
 
-/* ── Checkbox ─────────────────────────────────────────────────────────────── */
+.chip-tag {
+  background: var(--field);
+  box-shadow: inset 0 0 0 1px var(--stroke);
+  color: var(--text-2);
+  font-weight: 550;
+}
 
-/* Sized and offset so its centre lands on the centre of the title's first
-   line (19px line box, 17px control → 1px of top margin). */
-.check {
-  position: relative;
-  width: 17px;
-  height: 17px;
-  margin-top: 1px;
-  flex: none;
+.chip-tag::before { content: '#'; opacity: 0.5; }
+
+/* ── Inline editor ────────────────────────────────────────────────────────── */
+
+.edit-title,
+.edit-notes {
+  width: 100%;
   border: 0;
-  padding: 0;
-  border-radius: 50%;
   background: transparent;
-  box-shadow: inset 0 0 0 1.5px var(--check-ring);
+  color: var(--text-1);
+  font: inherit;
+  outline: none;
+  resize: none;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.edit-title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  field-sizing: content; /* grows with the title; harmless where unsupported */
+}
+
+.edit-notes {
+  margin-top: 6px;
+  padding: 7px 9px;
+  border-radius: var(--r-control);
+  background: var(--field);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.edit-notes::placeholder,
+.edit-title::placeholder { color: var(--text-3); }
+
+.edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.edit-field-wide { grid-column: 1 / -1; }
+
+.edit-field > span {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.edit-field input {
+  width: 100%;
+  height: 26px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--r-control);
+  background: var(--field);
+  box-shadow: inset 0 0 0 1px var(--stroke);
+  color: var(--text-1);
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.edit-field input:focus { box-shadow: inset 0 0 0 1.5px var(--tint); }
+
+.seg {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--r-control);
+  background: var(--field);
+  box-shadow: inset 0 0 0 1px var(--stroke);
+}
+
+.seg button {
+  flex: 1;
+  height: 21px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-2);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
   cursor: default;
-  transition: box-shadow var(--fast), background var(--fast);
+  transition: background var(--fast), color var(--fast);
 }
 
-.check:hover { box-shadow: inset 0 0 0 1.5px var(--tint); }
-.check:active { background: color-mix(in srgb, var(--tint) 18%, transparent); }
+.seg button[aria-pressed='true'] {
+  background: var(--glass-strong);
+  color: var(--seg-fg, var(--text-1));
+  box-shadow: var(--shadow-card);
+}
 
-.check[data-done='true'] {
-  background: var(--green);
+.edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 11px;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: var(--r-control);
+  background: var(--field);
+  box-shadow: inset 0 0 0 1px var(--stroke);
+  color: var(--text-1);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 550;
+  cursor: default;
+  white-space: nowrap;
+  transition: background var(--fast), color var(--fast);
+}
+
+.btn:hover { background: var(--glass-hover); }
+
+.btn-primary {
+  background: var(--tint);
   box-shadow: none;
+  color: #fff;
+  font-weight: 600;
 }
+.btn-primary:hover { background: color-mix(in srgb, var(--tint) 86%, #fff); }
 
-.check svg {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 10px;
-  height: 10px;
-  stroke: #fff;
-  stroke-width: 2.4;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
+.btn-danger { color: var(--pink); }
+.btn-danger:hover { background: color-mix(in srgb, var(--pink) 15%, transparent); }
 
 /* ── Completed section ────────────────────────────────────────────────────── */
 
@@ -350,8 +611,8 @@ body {
 .done-toggle:hover { color: var(--text-1); }
 
 .done-caret {
-  transition: transform var(--fast);
   font-size: 9px;
+  transition: transform var(--fast);
 }
 
 .done-toggle[aria-expanded='true'] .done-caret { transform: rotate(90deg); }
@@ -370,26 +631,30 @@ body {
 }
 
 .composer-shell {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 9px 12px;
+  padding: 8px 10px;
   border-radius: var(--r-card);
-  background: var(--glass);
-  backdrop-filter: blur(28px) saturate(190%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  background: var(--glass-strong);
+  backdrop-filter: var(--card-filter);
+  -webkit-backdrop-filter: var(--card-filter);
   box-shadow: inset 0 0 0 1px var(--stroke-bright), var(--shadow-card);
   transition: box-shadow var(--fast);
 }
 
 .composer-shell:focus-within {
   box-shadow: inset 0 0 0 1.5px var(--tint),
-    0 0 0 4px color-mix(in srgb, var(--tint) 15%, transparent), var(--shadow-card);
+    0 0 0 4px color-mix(in srgb, var(--tint) 14%, transparent), var(--shadow-card);
+}
+
+.composer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .composer input {
   flex: 1;
   min-width: 0;
+  height: 24px;
   border: 0;
   background: transparent;
   color: var(--text-1);
@@ -402,11 +667,53 @@ body {
 
 .composer input::placeholder { color: var(--text-3); }
 
-.composer-hint {
+.composer-expand {
   flex: none;
-  font-size: 11px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
   color: var(--text-3);
+  cursor: default;
+  transition: background var(--fast), color var(--fast);
 }
+
+.composer-expand:hover { background: var(--field); color: var(--text-1); }
+.composer-expand[aria-expanded='true'] { background: var(--field); color: var(--tint); }
+.composer-expand svg { width: 15px; height: 15px; fill: none; stroke: currentColor;
+  stroke-width: 1.5; stroke-linecap: round; }
+
+.composer-notes {
+  width: 100%;
+  margin-top: 7px;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: var(--r-control);
+  background: var(--field);
+  color: var(--text-1);
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.5;
+  outline: none;
+  resize: none;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.composer-notes::placeholder { color: var(--text-3); }
+
+.composer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 8px;
+}
+
+.composer-hint { font-size: 11px; color: var(--text-3); }
 
 /* ── Empty state ──────────────────────────────────────────────────────────── */
 
@@ -437,8 +744,8 @@ body {
   padding: 8px 10px 8px 15px;
   border-radius: var(--r-pill);
   background: var(--glass-strong);
-  backdrop-filter: blur(30px) saturate(190%);
-  -webkit-backdrop-filter: blur(30px) saturate(190%);
+  backdrop-filter: var(--card-filter);
+  -webkit-backdrop-filter: var(--card-filter);
   box-shadow: inset 0 0 0 1px var(--stroke-bright), var(--shadow-pop);
   font-size: 12.5px;
   font-weight: 550;

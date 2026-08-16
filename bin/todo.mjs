@@ -109,7 +109,8 @@ function sortTasks(tasks, day = todayISO()) {
     if (a.priority !== b.priority) return a.priority - b.priority;
     if (a.due && b.due && a.due !== b.due) return a.due < b.due ? -1 : 1;
     if (a.due !== b.due) return a.due ? -1 : 1;
-    return (a.order || 0) - (b.order || 0);
+    // Newest first among otherwise-equal tasks, matching the app's ordering.
+    return (b.order || 0) - (a.order || 0);
   });
 }
 
