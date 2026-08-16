@@ -229,11 +229,18 @@ export function findTask(vault, needle) {
   if (byPrefix.length === 1) return byPrefix[0];
   if (byPrefix.length > 1) throw new Error(`ambiguous id "${needle}" → ${byPrefix.map((t) => t.id).join(', ')}`);
 
+  // Prefer open tasks — "done invoice" should hit the live one, not last
+  // month's. But fall back to the whole vault so `reopen <title>` can reach a
+  // completed task at all.
   const open = vault.tasks.filter((t) => t.status !== 'done' && t.status !== 'cancelled');
-  const byTitle = open.filter((t) => t.title.toLowerCase().includes(q));
-  if (byTitle.length === 1) return byTitle[0];
-  if (byTitle.length > 1) {
-    throw new Error(`"${needle}" matches ${byTitle.length} tasks → ${byTitle.map((t) => `${t.id} (${t.title})`).join(' | ')}`);
+  for (const pool of [open, vault.tasks]) {
+    const matches = pool.filter((t) => t.title.toLowerCase().includes(q));
+    if (matches.length === 1) return matches[0];
+    if (matches.length > 1) {
+      throw new Error(
+        `"${needle}" matches ${matches.length} tasks → ${matches.map((t) => `${t.id} (${t.title})`).join(' | ')}`,
+      );
+    }
   }
   return null;
 }

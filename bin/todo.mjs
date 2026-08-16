@@ -155,8 +155,14 @@ commands.add = (positional, flags) => {
   process.stdout.write(`${green('✓ added')}\n${renderTask(task)}\n`);
 };
 
-/** Shared implementation for the status-transition verbs. */
-function transition(name, next, { onApply } = {}) {
+/**
+ * Shared implementation for the status-transition verbs.
+ *
+ * `onApply` is passed positionally on purpose — an earlier `{ onApply } = {}`
+ * signature silently swallowed every callback, so `done` never stamped
+ * completedAt and recurrences never fired.
+ */
+function transition(name, next, onApply) {
   commands[name] = (positional) => {
     if (!positional.length) die(`${name} needs at least one task id`);
     const vault = loadVault();
