@@ -65,15 +65,28 @@ interface Props {
 export function Composer({ projects, onAdd }: Props) {
   const [value, setValue] = useState('');
   const [notes, setNotes] = useState('');
+  const [tags, setTags] = useState('');
+  const [project, setProject] = useState('');
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const submit = () => {
     const draft = parseQuickAdd(value);
     if (!draft) return;
-    onAdd({ ...draft, ...(notes.trim() ? { notes: notes.trim() } : {}) });
+
+    // Typed-in fields win over anything parsed out of the one-liner.
+    const typedTags = tags.split(',').map((t) => t.trim()).filter(Boolean);
+    onAdd({
+      ...draft,
+      ...(notes.trim() ? { notes: notes.trim() } : {}),
+      ...(typedTags.length ? { tags: [...new Set([...(draft.tags ?? []), ...typedTags])] } : {}),
+      ...(project.trim() ? { project: project.trim() } : {}),
+    });
+
     setValue('');
     setNotes('');
+    setTags('');
+    setProject('');
     setOpen(false);
     inputRef.current?.focus();
   };
@@ -81,6 +94,8 @@ export function Composer({ projects, onAdd }: Props) {
   const reset = () => {
     setValue('');
     setNotes('');
+    setTags('');
+    setProject('');
     setOpen(false);
   };
 
@@ -137,6 +152,38 @@ export function Composer({ projects, onAdd }: Props) {
                 if (e.key === 'Escape') reset();
               }}
             />
+            <div className="edit-grid">
+              <label className="edit-field">
+                <span>Project</span>
+                <input
+                  value={project}
+                  list="composer-projects"
+                  placeholder="None"
+                  onChange={(e) => setProject(e.target.value)}
+                />
+                <datalist id="composer-projects">
+                  {projects.map((p) => (
+                    <option key={p} value={p} />
+                  ))}
+                </datalist>
+              </label>
+
+              <label className="edit-field">
+                <span>Tags</span>
+                <input
+                  value={tags}
+                  placeholder="comma, separated"
+                  onChange={(e) => setTags(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      submit();
+                    }
+                  }}
+                />
+              </label>
+            </div>
+
             <div className="composer-foot">
               <span className="composer-hint">⌘⏎ to add</span>
               <button className="btn btn-primary" onClick={submit}>

@@ -26,6 +26,16 @@ export default function App() {
     if (theme === 'system') root.removeAttribute('data-theme');
     else root.setAttribute('data-theme', theme);
     localStorage.setItem('todo.theme', theme);
+
+    // The NSVisualEffectView behind the webview follows the *window's*
+    // appearance, not our CSS. Without this, choosing Light while macOS is in
+    // Dark leaves light cards floating on dark system material — the CSS and
+    // the vibrancy disagree and the result looks broken.
+    if ('__TAURI_INTERNALS__' in window) {
+      void import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
+        void getCurrentWindow().setTheme(theme === 'system' ? null : theme);
+      });
+    }
   }, [theme]);
 
   // Auto-update stays — invisible until there is actually a new version.
