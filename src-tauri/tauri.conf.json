@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Prism",
-  "version": "0.1.0",
-  "identifier": "com.shawon.prism",
+  "productName": "To-Do",
+  "version": "0.2.0",
+  "identifier": "com.shawon.todo",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5183",
@@ -15,11 +15,11 @@
     "windows": [
       {
         "label": "main",
-        "title": "Prism",
-        "width": 1100,
-        "height": 740,
-        "minWidth": 720,
-        "minHeight": 520,
+        "title": "To-Do",
+        "width": 400,
+        "height": 640,
+        "minWidth": 320,
+        "minHeight": 400,
         "resizable": true,
         "fullscreen": false,
         "center": true,
@@ -48,7 +48,7 @@
     "copyright": "© Shawon",
     "category": "Productivity",
     "shortDescription": "Liquid Glass task manager",
-    "longDescription": "Prism is a minimal, colourful task manager for macOS, driven from Claude Code.",
+    "longDescription": "To-Do is a minimal, colourful task manager for macOS, driven from Claude Code.",
     "macOS": {
       "minimumSystemVersion": "11.0"
     },
@@ -60,7 +60,7 @@
       "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEREMUY3NzcwQzhCQTY1MUIKUldRYlpickljSGNmM1ZpS3BuUTduTjdLMzlxeFA5aWZhaUV3TDNtRDZ1ZTZGNW9tYUt6b2YwL0EK",
       "endpoints": [
-        "https://github.com/ArtistShaw0n/prism/releases/latest/download/latest.json"
+        "https://github.com/ArtistShaw0n/to-do/releases/latest/download/latest.json"
       ]
     }
   }

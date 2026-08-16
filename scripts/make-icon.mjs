@@ -1,5 +1,5 @@
 /**
- * Generates Prism's icon assets as PNGs with no image dependencies.
+ * Generates To-Do's icon assets as PNGs with no image dependencies.
  *
  *   node scripts/make-icon.mjs
  *

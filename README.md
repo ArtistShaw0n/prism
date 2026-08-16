@@ -1,4 +1,4 @@
-# Prism
+# To-Do
 
 A small, fast task manager for macOS with a Liquid Glass interface — driven
 from Claude Code.
@@ -17,14 +17,14 @@ file watcher and updates in under ~150 ms.
 
 ## Install
 
-Grab `Prism_universal.dmg` from [Releases](https://github.com/ArtistShaw0n/prism/releases)
+Grab `To-Do_universal.dmg` from [Releases](https://github.com/ArtistShaw0n/to-do/releases)
 and drag it to Applications.
 
-Prism isn't notarised with an Apple Developer ID, so macOS quarantines the first
+To-Do isn't notarised with an Apple Developer ID, so macOS quarantines the first
 launch. Right-click the app → **Open**, or:
 
 ```bash
-xattr -cr /Applications/Prism.app
+xattr -cr /Applications/To-Do.app
 ```
 
 Updates after that install silently in-app.
@@ -37,9 +37,8 @@ Talk to Claude Code in the project folder:
 
 > `kalke sokale client er jonno invoice ta pathate hobe, eta joruri`
 
-Claude turns that into a clean task, tags it `Client Work`, sets P1 and a due
-date of tomorrow, keeps your original wording underneath, and it appears in the
-app immediately.
+Claude turns that into a clean task, files it under `Client Work`, sets P1 and a
+due date of tomorrow, and it appears in the app immediately.
 
 Or drive the CLI yourself:
 
@@ -49,26 +48,23 @@ node bin/todo.mjs list
 node bin/todo.mjs done 2454bx
 ```
 
-Or just type into the app. Quick-add understands `#project`, `@tag`, `!1` and a
-trailing date word:
+### The window
 
-```
-Ship the landing page #Client !1 tomorrow
-```
+Deliberately plain: one list, a Completed section, and an input. Click a circle
+to complete a task; it moves to Completed. Type in the box and press `⏎` to add
+— a trailing date word is picked up, so "Call the bank tomorrow" gets a due date.
 
-### Keys
+Projects, tags, priorities, notes and daily digests are all still stored, and
+Claude still sets them from the CLI — the window just doesn't draw them. They can
+be surfaced later without touching the data.
 
 | | |
 |---|---|
 | `⌘⇧K` | show/hide from anywhere |
-| `⌘N` or `/` | focus quick-add |
-| `⌘F` | search |
-| `↑` `↓` | move selection |
-| `Space` | complete / reopen |
-| `⌘⌫` | delete selected |
-| `Esc` | clear selection |
+| `⏎` | add the typed task |
+| `Esc` | clear the input |
 
-Closing the window parks Prism in the menu bar, where the icon shows your open
+Closing the window parks To-Do in the menu bar, where the icon shows your open
 count. Quitting is `⌘Q` or the tray menu.
 
 ---
@@ -84,8 +80,8 @@ folder sits inside MEGA it's backed up and synced for free.
 
 Resolution order, if you want it elsewhere:
 
-1. `$PRISM_DATA_DIR`
-2. `dataDir` in `~/Library/Application Support/com.shawon.prism/config.json`
+1. `$TODO_DATA_DIR`
+2. `dataDir` in `~/Library/Application Support/com.shawon.todo/config.json`
 3. `data/` next to this README
 
 ```bash
@@ -133,5 +129,5 @@ git tag v0.1.1 && git push --follow-tags
 
 CI builds a universal binary, signs it, and publishes `latest.json`.
 
-The signing key at `~/.tauri/prism.key` is the one irreplaceable artefact here.
+The signing key at `~/.tauri/todo.key` is the one irreplaceable artefact here.
 Lose it and auto-update breaks permanently for every installed copy.

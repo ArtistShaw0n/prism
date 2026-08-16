@@ -1,13 +1,13 @@
 [package]
-name = "prism"
-version = "0.1.0"
-description = "Prism — a Liquid Glass task manager for macOS"
+name = "todo"
+version = "0.2.0"
+description = "To-Do — a Liquid Glass task manager for macOS"
 authors = ["Shawon"]
 edition = "2021"
 rust-version = "1.77"
 
 [lib]
-name = "prism_lib"
+name = "todo_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

@@ -10,7 +10,7 @@ import { emptyVault, PROJECT_COLORS, type Priority, type Stats, type Status, typ
 import { todayISO } from './dates';
 
 const inTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
-const DEV_KEY = 'prism.dev.vault';
+const DEV_KEY = 'todo.dev.vault';
 
 // ── Transport ─────────────────────────────────────────────────────────────────
 

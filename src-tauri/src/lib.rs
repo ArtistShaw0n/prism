@@ -1,4 +1,4 @@
-//! Prism — desktop shell.
+//! To-Do — desktop shell.
 //!
 //! Rust owns storage, file-watching and native macOS chrome. All task logic
 //! lives in the TypeScript layer, which reads and writes the vault as one JSON
@@ -20,7 +20,7 @@ use tauri::{AppHandle, Emitter, Manager, State, WindowEvent};
 #[cfg(target_os = "macos")]
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial, NSVisualEffectState};
 
-const APP_ID: &str = "com.shawon.prism";
+const APP_ID: &str = "com.shawon.todo";
 
 /// Tracks the `meta.updatedAt` value of our own most recent write, so the file
 /// watcher can tell an external edit (Claude, the CLI, MEGA sync) apart from
@@ -45,9 +45,9 @@ fn app_support_dir() -> PathBuf {
         .join(APP_ID)
 }
 
-/// Resolution order: $PRISM_DATA_DIR → config.json `dataDir` → app-support default.
+/// Resolution order: $TODO_DATA_DIR → config.json `dataDir` → app-support default.
 fn resolve_data_dir() -> PathBuf {
-    if let Ok(dir) = std::env::var("PRISM_DATA_DIR") {
+    if let Ok(dir) = std::env::var("TODO_DATA_DIR") {
         if !dir.trim().is_empty() {
             return PathBuf::from(dir);
         }
@@ -200,7 +200,7 @@ fn reveal_vault(app: AppHandle) -> Result<(), String> {
 /// without bringing the window forward.
 #[tauri::command]
 fn set_tray_badge(app: AppHandle, count: u32, urgent: bool) -> Result<(), String> {
-    if let Some(tray) = app.tray_by_id("prism-tray") {
+    if let Some(tray) = app.tray_by_id("todo-tray") {
         let title = match (count, urgent) {
             (0, _) => String::new(),
             (n, true) => format!("{n} !"),
@@ -252,13 +252,13 @@ fn spawn_vault_watcher(app: AppHandle) {
         let mut debouncer = match new_debouncer(Duration::from_millis(120), None, tx) {
             Ok(d) => d,
             Err(err) => {
-                eprintln!("prism: could not start vault watcher: {err}");
+                eprintln!("todo: could not start vault watcher: {err}");
                 return;
             }
         };
 
         if let Err(err) = debouncer.watch(&dir, RecursiveMode::NonRecursive) {
-            eprintln!("prism: could not watch {}: {err}", dir.display());
+            eprintln!("todo: could not watch {}: {err}", dir.display());
             return;
         }
 
@@ -296,17 +296,17 @@ fn spawn_vault_watcher(app: AppHandle) {
 // ── App setup ────────────────────────────────────────────────────────────────
 
 fn build_tray(app: &AppHandle) -> tauri::Result<()> {
-    let open = MenuItem::with_id(app, "open", "Open Prism", true, Some("Cmd+Shift+K"))?;
+    let open = MenuItem::with_id(app, "open", "Open To-Do", true, Some("Cmd+Shift+K"))?;
     let reveal = MenuItem::with_id(app, "reveal", "Reveal Vault in Finder…", true, None::<&str>)?;
     let sep = PredefinedMenuItem::separator(app)?;
-    let quit = MenuItem::with_id(app, "quit", "Quit Prism", true, Some("Cmd+Q"))?;
+    let quit = MenuItem::with_id(app, "quit", "Quit To-Do", true, Some("Cmd+Q"))?;
     let menu = Menu::with_items(app, &[&open, &reveal, &sep, &quit])?;
 
     // A dedicated monochrome glyph — using the colourful app icon as a template
     // would flatten it into a solid black square.
     let tray_icon = tauri::image::Image::from_bytes(include_bytes!("../icons/tray.png"))?;
 
-    TrayIconBuilder::with_id("prism-tray")
+    TrayIconBuilder::with_id("todo-tray")
         .icon(tray_icon)
         .icon_as_template(true) // adopts the menu bar's light/dark treatment
         .menu(&menu)
@@ -420,17 +420,17 @@ pub fn run() {
                 match registered {
                     Ok(()) => {
                         if let Err(err) = handle.global_shortcut().register(hotkey) {
-                            eprintln!("prism: ⌘⇧K unavailable ({err}); use the menu bar icon");
+                            eprintln!("todo: ⌘⇧K unavailable ({err}); use the menu bar icon");
                         }
                     }
-                    Err(err) => eprintln!("prism: global shortcut plugin failed: {err}"),
+                    Err(err) => eprintln!("todo: global shortcut plugin failed: {err}"),
                 }
             }
 
             Ok(())
         })
         .run(tauri::generate_context!())
-        .expect("error while running Prism");
+        .expect("error while running To-Do");
 }
 
 #[cfg(desktop)]

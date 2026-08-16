@@ -1,12 +1,12 @@
 /**
- * Prism vault — the single source of truth for all task data.
+ * To-Do vault — the single source of truth for all task data.
  *
  * The vault is one JSON file. Every write is atomic (temp file + rename) so the
  * Tauri app, which watches the file, never observes a half-written document.
  *
  * Path resolution order:
- *   1. $PRISM_DATA_DIR
- *   2. dataDir in ~/Library/Application Support/com.shawon.prism/config.json
+ *   1. $TODO_DATA_DIR
+ *   2. dataDir in ~/Library/Application Support/com.shawon.todo/config.json
  *   3. <repo>/data
  */
 
@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { randomBytes } from 'node:crypto';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const APP_SUPPORT = join(homedir(), 'Library', 'Application Support', 'com.shawon.prism');
+const APP_SUPPORT = join(homedir(), 'Library', 'Application Support', 'com.shawon.todo');
 
 export const SCHEMA_VERSION = 1;
 
@@ -33,7 +33,7 @@ const PROJECT_COLORS = [
 // ── Path resolution ───────────────────────────────────────────────────────────
 
 export function resolveDataDir() {
-  if (process.env.PRISM_DATA_DIR) return resolve(process.env.PRISM_DATA_DIR);
+  if (process.env.TODO_DATA_DIR) return resolve(process.env.TODO_DATA_DIR);
 
   const cfgPath = join(APP_SUPPORT, 'config.json');
   if (existsSync(cfgPath)) {

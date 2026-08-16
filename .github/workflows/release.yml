@@ -1,7 +1,7 @@
 name: Release
 
 # Pushing a v* tag builds, signs and publishes the release that installed
-# copies of Prism will auto-update from.
+# copies of To-Do will auto-update from.
 on:
   push:
     tags:
@@ -46,12 +46,12 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'Prism ${{ github.ref_name }}'
+          releaseName: 'To-Do ${{ github.ref_name }}'
           releaseBody: |
-            Download `Prism_universal.dmg`, drag it to Applications.
+            Download `To-Do_universal.dmg`, drag it to Applications.
 
-            Prism is not notarised with an Apple Developer ID, so the first
-            launch needs **right-click → Open** (or `xattr -cr /Applications/Prism.app`).
+            To-Do is not notarised with an Apple Developer ID, so the first
+            launch needs **right-click → Open** (or `xattr -cr /Applications/To-Do.app`).
             Later updates install silently.
           releaseDraft: false
           prerelease: false

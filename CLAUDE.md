@@ -1,4 +1,4 @@
-# Prism — operating manual for Claude
+# To-Do — operating manual for Claude
 
 This folder is Shawon's task system. He talks to Claude Code here in a mix of
 **Bangla, Banglish and English**; Claude normalises that into clean English
@@ -227,7 +227,7 @@ and show an update toast.
 **The version in `package.json`, `src-tauri/tauri.conf.json` and the git tag
 must match**, or the updater will not offer the release.
 
-The private signing key lives at `~/.tauri/prism.key` and in the repo secret
+The private signing key lives at `~/.tauri/todo.key` and in the repo secret
 `TAURI_SIGNING_PRIVATE_KEY`. **If it is lost, auto-update breaks permanently for
 every installed copy** — there is no recovery, only a manual reinstall.
 

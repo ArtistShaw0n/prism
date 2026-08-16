@@ -1,11 +1,11 @@
 {
-  "name": "prism",
-  "version": "0.1.0",
-  "description": "Prism — a Liquid Glass task manager for macOS, driven by Claude Code",
+  "name": "todo",
+  "version": "0.2.0",
+  "description": "To-Do — a Liquid Glass task manager for macOS, driven by Claude Code",
   "private": true,
   "type": "module",
   "bin": {
-    "prism": "./bin/todo.mjs"
+    "todo": "./bin/todo.mjs"
   },
   "scripts": {
     "dev": "vite",

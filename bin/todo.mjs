@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Prism CLI — the bridge between Claude Code and the desktop app.
+ * To-Do CLI — the bridge between Claude Code and the desktop app.
  *
  * Claude never hand-edits the vault JSON; it calls this instead, so every
  * mutation is validated, timestamped and written atomically.
@@ -119,7 +119,7 @@ const commands = {};
 
 commands.add = (positional, flags) => {
   const title = positional.join(' ').trim();
-  if (!title) die('add needs a title: prism add "Fix the login bug" --p 1 --due today');
+  if (!title) die('add needs a title: todo add "Fix the login bug" --p 1 --due today');
 
   const vault = loadVault();
   const due = parseDate(flags.due);
@@ -299,7 +299,7 @@ commands.edit = (positional, flags) => {
 
 commands.tag = (positional) => {
   const [needle, ...ops] = positional;
-  if (!needle || !ops.length) die('usage: prism tag <id> +work -personal');
+  if (!needle || !ops.length) die('usage: todo tag <id> +work -personal');
   const vault = loadVault();
   let task;
   try { task = findTask(vault, needle); } catch (err) { die(err.message); }
@@ -316,7 +316,7 @@ commands.tag = (positional) => {
 
 commands.sub = (positional) => {
   const [needle, action, ...rest] = positional;
-  if (!needle || !action) die('usage: prism sub <id> add "Step one"  |  prism sub <id> done 1');
+  if (!needle || !action) die('usage: todo sub <id> add "Step one"  |  todo sub <id> done 1');
   const vault = loadVault();
   let task;
   try { task = findTask(vault, needle); } catch (err) { die(err.message); }
@@ -430,7 +430,7 @@ commands.stats = (_positional, flags) => {
   const s = computeStats(vault);
   if (flags.json) { process.stdout.write(`${JSON.stringify(s, null, 2)}\n`); return; }
   process.stdout.write(
-    `\n${bold('Prism')} ${dim(s.date)}\n\n` +
+    `\n${bold('To-Do')} ${dim(s.date)}\n\n` +
     `  ${cyan(String(s.doing).padStart(3))}  in progress\n` +
     `  ${String(s.open).padStart(3)}  open\n` +
     `  ${yellow(String(s.dueToday).padStart(3))}  due today\n` +
@@ -566,7 +566,7 @@ commands.export = (_positional, flags) => {
   const vault = loadVault();
   if (flags.md) {
     const open = sortTasks(vault.tasks.filter((t) => t.status !== 'done' && t.status !== 'cancelled'));
-    let out = `# Prism — ${todayISO()}\n\n`;
+    let out = `# To-Do — ${todayISO()}\n\n`;
     for (const t of open) {
       out += `- [ ] ${t.title}`;
       const meta = [t.project && `#${t.project}`, t.due && `due ${t.due}`, t.priority <= 1 && `P${t.priority}`]
@@ -581,7 +581,7 @@ commands.export = (_positional, flags) => {
 
 commands.help = () => {
   process.stdout.write(`
-${bold('Prism')} ${dim('— task vault CLI')}
+${bold('To-Do')} ${dim('— task vault CLI')}
 
 ${bold('Capture')}
   add <title> [--p 0-3] [--due X] [--tag a,b] [--project X]
@@ -624,7 +624,7 @@ const [, , rawCommand, ...rest] = process.argv;
 const command = rawCommand || 'list';
 
 if (command === '--help' || command === '-h') { commands.help(); process.exit(0); }
-if (!commands[command]) die(`unknown command "${command}" — run \`prism help\``);
+if (!commands[command]) die(`unknown command "${command}" — run \`todo help\``);
 
 const { positional, flags } = parseArgs(rest);
 try {

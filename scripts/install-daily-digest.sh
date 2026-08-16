@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installs a launchd job that writes Prism's daily brief every morning at 06:30.
+# Installs a launchd job that writes To-Do's daily brief every morning at 06:30.
 #
 #   bash scripts/install-daily-digest.sh          # install
 #   bash scripts/install-daily-digest.sh --remove # uninstall
@@ -10,7 +10,7 @@
 
 set -euo pipefail
 
-LABEL="com.shawon.prism.digest"
+LABEL="com.shawon.todo.digest"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 NODE="$(command -v node)"
