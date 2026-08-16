@@ -198,7 +198,8 @@ commands.block = (positional, flags) => {
   if (reason) task.blockedReason = String(reason);
   task.updatedAt = nowISO();
   saveVault(vault);
-  process.stdout.write(`${yellow('⊘')} ${renderTask(task)}${task.blockedReason ? dim(` — ${task.blockedReason}`) : ''}\n`);
+  // renderTask already prints the status glyph — don't prefix a second one.
+  process.stdout.write(`${renderTask(task)}${task.blockedReason ? dim(` — ${task.blockedReason}`) : ''}\n`);
 };
 
 /** When a recurring task is completed, queue the next occurrence. */
@@ -434,23 +435,92 @@ commands.stats = (_positional, flags) => {
   );
 };
 
+/** Bengali numerals, so digits don't sit oddly inside Bengali prose. */
+const bn = (n) => String(n).replace(/\d/g, (d) => '০১২৩৪৫৬৭৮৯'[Number(d)]);
+
+/**
+ * Compose a serviceable brief from the vault alone, in Shawon's register.
+ *
+ * This is the fallback for days Claude doesn't write one, so the app is never
+ * showing a stale digest. A Claude-written brief via --write is better; this
+ * just guarantees a floor.
+ */
+function autoDigest(vault, stats, day) {
+  const open = vault.tasks.filter((t) => t.status !== 'done' && t.status !== 'cancelled');
+  if (!open.length) {
+    return stats.completedToday > 0
+      ? `সব কাজ শেষ — আজকে **${bn(stats.completedToday)}টা** complete করেছেন। 🎉`
+      : 'লিস্ট খালি। নতুন কাজ যোগ করতে বলুন।';
+  }
+
+  const lines = [];
+  const headline = [];
+  if (stats.dueToday) headline.push(`**${bn(stats.dueToday)}টা কাজ** due`);
+  if (stats.overdue) headline.push(`**${bn(stats.overdue)}টা overdue**`);
+  if (stats.doing) headline.push(`${bn(stats.doing)}টা চলছে`);
+  lines.push(
+    headline.length
+      ? `আজকে ${headline.join(', ')}. মোট **${bn(stats.open)}টা** open.`
+      : `আজকে কিছু due নেই, কিন্তু **${bn(stats.open)}টা** কাজ open আছে.`,
+  );
+
+  // Lead with the most pressing *actionable* item. A blocked task can't be
+  // worked on, so it must never become the headline.
+  const top = sortTasks(open.filter((t) => t.status !== 'blocked'), day)[0];
+  if (top) {
+    const why = top.due && top.due < day ? 'overdue' : top.priority <= 1 ? 'সবচেয়ে জরুরি' : 'পরের কাজ';
+    lines.push(`${why} — \`${top.title}\`${top.project ? ` (**${top.project}**)` : ''}.`);
+  }
+
+  const bullets = [];
+  const stale = open
+    .filter((t) => t.due && t.due < day)
+    .sort((a, b) => a.due.localeCompare(b.due))
+    .slice(0, 2);
+  for (const t of stale) {
+    const days = Math.round((new Date(`${day}T12:00:00`) - new Date(`${t.due}T12:00:00`)) / 86400000);
+    bullets.push(`\`${t.title}\` — ${bn(days)} দিন ধরে ঝুলে আছে`);
+  }
+
+  const blocked = open.filter((t) => t.status === 'blocked');
+  for (const t of blocked.slice(0, 2)) {
+    bullets.push(`\`${t.title}\` আটকে আছে${t.blockedReason ? ` — ${t.blockedReason}` : ''}`);
+  }
+
+  // Busiest project, when there is a clear one.
+  const byProject = new Map();
+  for (const t of open) if (t.project) byProject.set(t.project, (byProject.get(t.project) || 0) + 1);
+  const busiest = [...byProject].sort((a, b) => b[1] - a[1])[0];
+  if (busiest && busiest[1] >= 3) bullets.push(`**${busiest[0]}** এ ${bn(busiest[1])}টা কাজ জমেছে`);
+
+  if (bullets.length) lines.push('', ...bullets.map((b) => `- ${b}`));
+  if (stats.streak > 1) lines.push('', `🔥 ${bn(stats.streak)} দিনের streak চলছে — ধরে রাখুন।`);
+
+  return lines.join('\n');
+}
+
 /**
  * The daily brief. Stats are always computed; Claude supplies the prose via
- * --write so the app can show a human summary above the numbers.
+ * --write so the app can show a human summary above the numbers. `--auto`
+ * composes one from the vault when Claude isn't in the loop.
  */
 commands.digest = (positional, flags) => {
   const vault = loadVault();
   const day = typeof flags.date === 'string' ? flags.date : todayISO();
   const stats = computeStats(vault, day);
 
-  const markdown = typeof flags.write === 'string' ? flags.write : positional.join(' ').trim();
+  const markdown = flags.auto
+    ? autoDigest(vault, stats, day)
+    : typeof flags.write === 'string'
+      ? flags.write
+      : positional.join(' ').trim();
   if (markdown) {
     const entry = {
       date: day,
       markdown,
       stats,
       createdAt: nowISO(),
-      author: typeof flags.author === 'string' ? flags.author : 'claude',
+      author: typeof flags.author === 'string' ? flags.author : flags.auto ? 'auto' : 'claude',
     };
     const existing = vault.digests.findIndex((d) => d.date === day);
     if (existing >= 0) vault.digests[existing] = entry;
@@ -530,6 +600,7 @@ ${bold('Read')}
 
 ${bold('Daily brief')}
   digest --write "<markdown>"   store today's summary (Claude writes this)
+  digest --auto                 compose one from the vault, no Claude needed
   digest [--date YYYY-MM-DD] [--json]
 
 ${bold('Utility')}

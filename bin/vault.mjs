@@ -171,11 +171,12 @@ export function parseDate(input) {
   if (s === 'yesterday') return shift(-1);
   if (s === 'nextweek' || s === 'next-week') return shift(7);
 
-  const rel = s.match(/^\+?(\d+)\s*([dwm])$/);
+  // Signed offsets: "+3d", "3d", "2w", "-1d" (backdating a missed task).
+  const rel = s.match(/^([+-]?)(\d+)\s*([dwm])$/);
   if (rel) {
-    const n = Number(rel[1]);
-    if (rel[2] === 'd') return shift(n);
-    if (rel[2] === 'w') return shift(n * 7);
+    const n = Number(rel[2]) * (rel[1] === '-' ? -1 : 1);
+    if (rel[3] === 'd') return shift(n);
+    if (rel[3] === 'w') return shift(n * 7);
     const d = new Date(base);
     d.setMonth(d.getMonth() + n);
     return todayISO(d);

@@ -66,8 +66,12 @@ export function parseDateInput(input: string): string | undefined {
   if (s === 'tomorrow' || s === 'tmr' || s === 'tom' || s === 'kal') return addDays(today, 1);
   if (s === 'yesterday') return addDays(today, -1);
 
-  const rel = s.match(/^\+?(\d+)\s*([dw])$/);
-  if (rel) return addDays(today, Number(rel[1]) * (rel[2] === 'w' ? 7 : 1));
+  // Signed offsets: "+3d", "3d", "2w", "-1d" (backdating a missed task).
+  const rel = s.match(/^([+-]?)(\d+)\s*([dw])$/);
+  if (rel) {
+    const n = Number(rel[2]) * (rel[1] === '-' ? -1 : 1);
+    return addDays(today, n * (rel[3] === 'w' ? 7 : 1));
+  }
 
   const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
   const idx = days.indexOf(s.slice(0, 3));
