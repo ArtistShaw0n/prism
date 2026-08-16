@@ -1,0 +1,4 @@
+# esbuild ships a platform binary via a postinstall script; Vite cannot build
+# without it. pnpm 11 requires build scripts to be allow-listed explicitly.
+allowBuilds:
+  esbuild: true

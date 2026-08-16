@@ -1,0 +1,43 @@
+# ── Personal task data — NEVER commit (repo is public) ──────────────
+/data/
+*.tasks.json
+prism-backup-*.json
+
+# ── Signing keys — NEVER commit ─────────────────────────────────────
+*.key
+*.pem
+.tauri/
+updater-private.key*
+
+# ── Dependencies / build output ─────────────────────────────────────
+node_modules/
+dist/
+dist-ssr/
+src-tauri/target/
+src-tauri/gen/
+
+# ── Env ─────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── macOS ───────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+# The Finder's custom-icon file is literally "Icon" + CR. Written as `Icon?`
+# the ? is a glob, which on a case-insensitive filesystem also swallows
+# src-tauri/icons/ — so match the carriage return explicitly.
+Icon[\r]
+._*
+
+# ── Editors ─────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# ── Logs ────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+pnpm-debug.log*

@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permissions required by the Prism main window.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-set-theme",
+    "core:webview:allow-internal-toggle-devtools",
+    "opener:default",
+    "notification:default",
+    "updater:default",
+    "process:allow-restart",
+    "global-shortcut:allow-is-registered"
+  ]
+}

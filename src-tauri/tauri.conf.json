@@ -1,0 +1,67 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Prism",
+  "version": "0.1.0",
+  "identifier": "com.shawon.prism",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5183",
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Prism",
+        "width": 1100,
+        "height": 740,
+        "minWidth": 720,
+        "minHeight": 520,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "decorations": true,
+        "transparent": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "acceptFirstMouse": true,
+        "theme": null
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app", "dmg"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "copyright": "© Shawon",
+    "category": "Productivity",
+    "shortDescription": "Liquid Glass task manager",
+    "longDescription": "Prism is a minimal, colourful task manager for macOS, driven from Claude Code.",
+    "macOS": {
+      "minimumSystemVersion": "11.0"
+    },
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "active": true,
+      "dialog": false,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEREMUY3NzcwQzhCQTY1MUIKUldRYlpickljSGNmM1ZpS3BuUTduTjdLMzlxeFA5aWZhaUV3TDNtRDZ1ZTZGNW9tYUt6b2YwL0EK",
+      "endpoints": [
+        "https://github.com/ArtistShaw0n/prism/releases/latest/download/latest.json"
+      ]
+    }
+  }
+}
