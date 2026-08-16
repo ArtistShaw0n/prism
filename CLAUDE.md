@@ -121,6 +121,11 @@ Good:
 
 Rewriting the same date overwrites that day's entry, so it's safe to refine.
 
+A digest is a written snapshot, not a live view — it will happily go on naming
+tasks that have since been completed or deleted. **After any bulk change
+(several completions, deletions, a re-plan), rewrite the digest** or it shows
+Shawon a summary of a list that no longer exists.
+
 Get the numbers first so the prose is true:
 
 ```bash
