@@ -127,6 +127,20 @@ Get the numbers first so the prose is true:
 node bin/todo.mjs stats --json
 ```
 
+### The automatic floor
+
+`node bin/todo.mjs digest --auto` composes a serviceable brief from the vault
+alone — no Claude, no network. Optionally scheduled for 06:30 daily via
+`bash scripts/install-daily-digest.sh`.
+
+So the app always has *something*. Your job is to make it better: when Shawon
+starts a session, check whether today's digest was machine-written and replace
+it with a real one.
+
+```bash
+node bin/todo.mjs digest --json | grep '"author"'   # "auto" means write a proper one
+```
+
 ---
 
 ## 4. CLI reference
