@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { longDate } from './lib/dates';
-import { addTask, isOpen, sortTasks, toggleDone } from './lib/vault';
+import { longDate, todayISO } from './lib/dates';
+import { addTask, computeStats, isOpen, sortTasks, toggleDone } from './lib/vault';
 import { useVault } from './lib/useVault';
+import { DailyBrief } from './components/DailyBrief';
 import { TaskRow } from './components/TaskRow';
 import { Composer } from './components/Composer';
 
@@ -13,7 +14,7 @@ export default function App() {
   const [showDone, setShowDone] = useState(false);
   const [update, setUpdate] = useState<{ version: string; install: () => Promise<void> } | null>(null);
 
-  // Auto-update stays — it's invisible until there's actually a new version.
+  // Auto-update stays — invisible until there is actually a new version.
   useEffect(() => {
     if (!('__TAURI_INTERNALS__' in window)) return;
     let cancelled = false;
@@ -41,10 +42,7 @@ export default function App() {
     };
   }, []);
 
-  const open = useMemo(
-    () => (vault ? sortTasks(vault.tasks.filter(isOpen)) : []),
-    [vault],
-  );
+  const open = useMemo(() => (vault ? sortTasks(vault.tasks.filter(isOpen)) : []), [vault]);
 
   const done = useMemo(
     () =>
@@ -57,22 +55,25 @@ export default function App() {
     [vault],
   );
 
+  const stats = useMemo(() => (vault ? computeStats(vault) : null), [vault]);
+  const digest = useMemo(() => vault?.digests.find((d) => d.date === todayISO()), [vault]);
+
   if (error && !vault) {
     return (
       <div className="empty" style={{ height: '100%' }}>
         <div className="empty-mark">⚠</div>
         <div className="empty-title">Could not open the vault</div>
-        <div style={{ maxWidth: 300 }}>{error}</div>
+        <div style={{ maxWidth: 320 }}>{error}</div>
       </div>
     );
   }
 
-  if (!vault) return <div className="empty" style={{ height: '100%' }} />;
+  if (!vault || !stats) return <div className="empty" style={{ height: '100%' }} />;
 
   return (
     <>
       <div className="aurora" aria-hidden="true">
-        <span /><span /><span />
+        <span /><span /><span /><span />
       </div>
 
       <div className="drag-strip" data-tauri-drag-region />
@@ -84,6 +85,8 @@ export default function App() {
         </header>
 
         <div className="sheet-scroll">
+          <DailyBrief digest={digest} stats={stats} />
+
           {open.length === 0 ? (
             <div className="empty">
               <div className="empty-mark">✓</div>
@@ -91,11 +94,12 @@ export default function App() {
               <div>Add one below.</div>
             </div>
           ) : (
-            <div className="list">
+            <div className="task-stack">
               {open.map((task) => (
                 <TaskRow
                   key={task.id}
                   task={task}
+                  vault={vault}
                   onToggle={() => void mutate((v) => toggleDone(v, task.id))}
                 />
               ))}
@@ -115,11 +119,12 @@ export default function App() {
               </button>
 
               {showDone && (
-                <div className="list">
+                <div className="task-stack">
                   {done.map((task) => (
                     <TaskRow
                       key={task.id}
                       task={task}
+                      vault={vault}
                       onToggle={() => void mutate((v) => toggleDone(v, task.id))}
                     />
                   ))}
@@ -129,17 +134,18 @@ export default function App() {
           )}
         </div>
 
-        <Composer onAdd={(draft) => void mutate((v) => addTask(v, draft))} />
+        <Composer
+          projects={vault.projects.map((p) => p.name)}
+          onAdd={(draft) => void mutate((v) => addTask(v, draft))}
+        />
       </main>
 
       {update && (
-        <div className="composer" style={{ padding: '0 0 12px' }}>
-          <div className="composer-shell" style={{ justifyContent: 'space-between' }}>
-            <span>Version {update.version} available</span>
-            <button className="done-toggle" style={{ width: 'auto', margin: 0 }} onClick={() => void update.install()}>
-              Update
-            </button>
-          </div>
+        <div className="toast">
+          Version {update.version} available
+          <button className="btn-update" onClick={() => void update.install()}>
+            Update
+          </button>
         </div>
       )}
     </>

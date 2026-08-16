@@ -1,20 +1,35 @@
-import type { Task } from '../lib/types';
+import type { Task, Vault } from '../lib/types';
 import { isOverdue, relativeDue } from '../lib/dates';
+import { projectColor } from '../lib/vault';
 
 /**
- * One line in the list: a checkbox, the title, and a due date when there is one.
+ * A task card: checkbox, title, notes, project.
  *
- * Everything else a task carries — project, tags, notes, priority, subtasks —
- * still lives in the vault and is still set by the CLI. It is simply not drawn
- * here; the list is meant to stay readable at a glance.
+ * Priority, tags and the user's original Banglish phrasing are all still stored
+ * on the task — they are deliberately not drawn here, to keep the card to the
+ * three things worth reading at a glance. The left spine carries the project's
+ * colour so the card reads as coloured without adding another chip.
  */
-export function TaskRow({ task, onToggle }: { task: Task; onToggle: () => void }) {
+export function TaskRow({
+  task,
+  vault,
+  onToggle,
+}: {
+  task: Task;
+  vault: Vault;
+  onToggle: () => void;
+}) {
   const done = task.status === 'done' || task.status === 'cancelled';
   const due = relativeDue(task.due);
   const late = !done && isOverdue(task.due);
+  const color = projectColor(vault, task.project);
 
   return (
-    <div className="row" data-done={done}>
+    <div
+      className="task"
+      data-done={done}
+      style={{ '--spine': done ? 'transparent' : color } as React.CSSProperties}
+    >
       <button
         className="check"
         data-done={done}
@@ -28,16 +43,30 @@ export function TaskRow({ task, onToggle }: { task: Task; onToggle: () => void }
         )}
       </button>
 
-      <span className="row-title">{task.title}</span>
+      <div className="task-main">
+        <div className="task-title">{task.title}</div>
 
-      {due && !done && (
-        <span
-          className="row-due"
-          style={{ '--due-color': late ? 'var(--pink)' : undefined } as React.CSSProperties}
-        >
-          {due}
-        </span>
-      )}
+        {task.notes && !done && <div className="task-notes">{task.notes}</div>}
+
+        {(task.project || due) && (
+          <div className="task-meta">
+            {task.project && (
+              <span className="chip" style={{ '--chip': color } as React.CSSProperties}>
+                <span className="chip-dot" />
+                {task.project}
+              </span>
+            )}
+            {due && !done && (
+              <span
+                className="chip"
+                style={{ '--chip': late ? 'var(--pink)' : 'var(--text-2)' } as React.CSSProperties}
+              >
+                {due}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

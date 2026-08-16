@@ -543,8 +543,21 @@ commands.digest = (positional, flags) => {
   process.stdout.write(found ? `\n${found.markdown}\n\n` : dim(`no digest written for ${day}\n`));
 };
 
-commands.projects = () => {
+commands.projects = (_positional, flags) => {
   const vault = loadVault();
+
+  if (flags.prune) {
+    // Projects are created implicitly by `add --project`, so deleting the last
+    // task in one leaves an empty container behind that still shows up in the UI.
+    const used = new Set(vault.tasks.map((t) => t.project).filter(Boolean));
+    const empty = vault.projects.filter((p) => !used.has(p.name));
+    if (!empty.length) { process.stdout.write(`${dim('no empty projects')}\n`); return; }
+    vault.projects = vault.projects.filter((p) => used.has(p.name));
+    saveVault(vault);
+    for (const p of empty) process.stdout.write(`${red('✗ removed')} ${magenta('#' + p.name)}\n`);
+    return;
+  }
+
   if (!vault.projects.length) { process.stdout.write(`${dim('no projects yet')}\n`); return; }
   process.stdout.write('\n');
   for (const p of vault.projects) {

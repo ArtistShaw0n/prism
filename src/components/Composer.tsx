@@ -5,18 +5,24 @@ import { parseDateInput } from '../lib/dates';
 /**
  * Plain text in, task out.
  *
- * Only a trailing date word is parsed ("… tomorrow"), because the due date is
- * the one attribute the list actually shows. Project/tag/priority syntax is
- * deliberately *not* parsed here — none of it is visible, so silently eating
- * "#42" out of a title would be a bug, not a feature. The CLI keeps the full
- * syntax for when Claude is driving.
+ * Parses only what the card actually shows: `#project` and a trailing date
+ * word. Priority and tag syntax are deliberately left unparsed — neither is
+ * drawn on the card, so quietly eating "!1" or "@x" out of a title would be a
+ * bug rather than a feature. The CLI keeps the full syntax for Claude.
  */
 export function parseQuickAdd(input: string): (Partial<Task> & { title: string }) | null {
-  const words = input.trim().split(/\s+/).filter(Boolean);
-  if (!words.length) return null;
+  let text = ` ${input.trim()} `;
+  if (!text.trim()) return null;
 
+  let project: string | undefined;
+  // Require a letter to start, so "Fix issue #42" keeps its number.
+  text = text.replace(/\s#([a-zA-Z][^\s#]*)/g, (_, name: string) => {
+    project ??= name;
+    return ' ';
+  });
+
+  const words = text.trim().split(/\s+/).filter(Boolean);
   let due: string | undefined;
-  // Check the last two words, then the last one — "next week" before "week".
   for (let take = Math.min(2, words.length); take >= 1; take -= 1) {
     // Never let the date word consume the entire title.
     if (take >= words.length) continue;
@@ -31,10 +37,20 @@ export function parseQuickAdd(input: string): (Partial<Task> & { title: string }
   const title = words.join(' ').trim();
   if (!title) return null;
 
-  return { title, ...(due ? { due } : {}), source: 'app' as const };
+  return {
+    title,
+    ...(project ? { project } : {}),
+    ...(due ? { due } : {}),
+    source: 'app' as const,
+  };
 }
 
-export function Composer({ onAdd }: { onAdd: (draft: Partial<Task> & { title: string }) => void }) {
+interface Props {
+  projects: string[];
+  onAdd: (draft: Partial<Task> & { title: string }) => void;
+}
+
+export function Composer({ projects, onAdd }: Props) {
   const [value, setValue] = useState('');
 
   const submit = () => {
@@ -44,14 +60,18 @@ export function Composer({ onAdd }: { onAdd: (draft: Partial<Task> & { title: st
     setValue('');
   };
 
+  // Hint with a project the user actually has. Prefer the shortest name so the
+  // placeholder stays readable in a narrow window.
+  const shortest = [...projects].sort((a, b) => a.length - b.length)[0];
+  const hint = shortest ? `Add a task…   #${shortest}   tomorrow` : 'Add a task…';
+
   return (
     <div className="composer">
       <div className="composer-shell">
         <input
           value={value}
-          placeholder="Add a task…"
+          placeholder={hint}
           spellCheck={false}
-          autoFocus
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
