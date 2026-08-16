@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { longDate, todayISO } from './lib/dates';
-import { addTask, computeStats, isOpen, sortTasks, toggleDone } from './lib/vault';
+import { longDate } from './lib/dates';
+import { addTask, isOpen, sortTasks, toggleDone } from './lib/vault';
 import { useVault } from './lib/useVault';
-import { DailyBrief } from './components/DailyBrief';
 import { TaskRow } from './components/TaskRow';
 import { Composer } from './components/Composer';
 
@@ -55,9 +54,6 @@ export default function App() {
     [vault],
   );
 
-  const stats = useMemo(() => (vault ? computeStats(vault) : null), [vault]);
-  const digest = useMemo(() => vault?.digests.find((d) => d.date === todayISO()), [vault]);
-
   if (error && !vault) {
     return (
       <div className="empty" style={{ height: '100%' }}>
@@ -68,7 +64,7 @@ export default function App() {
     );
   }
 
-  if (!vault || !stats) return <div className="empty" style={{ height: '100%' }} />;
+  if (!vault) return <div className="empty" style={{ height: '100%' }} />;
 
   return (
     <>
@@ -85,8 +81,6 @@ export default function App() {
         </header>
 
         <div className="sheet-scroll">
-          <DailyBrief digest={digest} stats={stats} />
-
           {open.length === 0 ? (
             <div className="empty">
               <div className="empty-mark">✓</div>

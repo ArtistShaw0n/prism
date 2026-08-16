@@ -7,8 +7,7 @@ import { projectColor } from '../lib/vault';
  *
  * Priority, tags and the user's original Banglish phrasing are all still stored
  * on the task — they are deliberately not drawn here, to keep the card to the
- * three things worth reading at a glance. The left spine carries the project's
- * colour so the card reads as coloured without adding another chip.
+ * three things worth reading at a glance.
  */
 export function TaskRow({
   task,
@@ -25,11 +24,7 @@ export function TaskRow({
   const color = projectColor(vault, task.project);
 
   return (
-    <div
-      className="task"
-      data-done={done}
-      style={{ '--spine': done ? 'transparent' : color } as React.CSSProperties}
-    >
+    <div className="task" data-done={done}>
       <button
         className="check"
         data-done={done}

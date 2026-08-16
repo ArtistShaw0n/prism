@@ -45,18 +45,21 @@ svg {
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
   --fast: 140ms var(--ease);
 
-  /* Light */
+  /* Light.
+     Cards sit near-opaque white: at 0.6 the blurred aurora bled through and
+     desaturated them to grey, so they stopped reading as raised surfaces. */
   --text-1: rgba(0, 0, 0, 0.88);
   --text-2: rgba(0, 0, 0, 0.52);
   --text-3: rgba(0, 0, 0, 0.32);
-  --glass: rgba(255, 255, 255, 0.6);
-  --glass-strong: rgba(255, 255, 255, 0.76);
-  --glass-hover: rgba(255, 255, 255, 0.85);
+  --glass: rgba(255, 255, 255, 0.84);
+  --glass-strong: rgba(255, 255, 255, 0.92);
+  --glass-hover: rgba(255, 255, 255, 0.97);
+  --check-ring: rgba(0, 0, 0, 0.26);
   --stroke: rgba(0, 0, 0, 0.07);
-  --stroke-bright: rgba(255, 255, 255, 0.65);
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --stroke-bright: rgba(255, 255, 255, 0.9);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.06), 0 6px 20px rgba(0, 0, 0, 0.07);
   --shadow-pop: 0 12px 48px rgba(0, 0, 0, 0.16);
-  --aurora-alpha: 0.5;
+  --aurora-alpha: 0.38;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -67,6 +70,7 @@ svg {
     --glass: rgba(44, 44, 48, 0.52);
     --glass-strong: rgba(52, 52, 58, 0.68);
     --glass-hover: rgba(64, 64, 70, 0.7);
+    --check-ring: rgba(255, 255, 255, 0.32);
     --stroke: rgba(255, 255, 255, 0.08);
     --stroke-bright: rgba(255, 255, 255, 0.11);
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.28);
@@ -160,122 +164,37 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 42px 14px 0;
+  padding: 44px 16px 0;
 }
 
 .sheet-head {
   flex: none;
-  padding: 4px 6px 12px;
+  padding: 0 2px 14px;
 }
 
 .sheet-title {
   margin: 0;
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: -0.022em;
+  letter-spacing: -0.024em;
 }
 
 .sheet-date {
-  margin: 1px 0 0;
-  font-size: 11.5px;
+  margin: 2px 0 0;
+  font-size: 12px;
   color: var(--text-2);
 }
 
+/* The negative margin lets the scrollbar sit out in the sheet's own padding,
+   while padding-right keeps the cards clear of it. Card edges therefore line up
+   with the composer below instead of being crowded by the scrollbar. */
 .sheet-scroll {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 6px;
+  overflow-x: hidden;
+  margin-right: -10px;
+  padding: 0 10px 8px 0;
 }
-
-/* ── Daily brief ──────────────────────────────────────────────────────────── */
-
-.brief {
-  position: relative;
-  margin-bottom: 14px;
-  padding: 15px 17px;
-  border-radius: var(--r-card);
-  background: var(--glass-strong);
-  backdrop-filter: blur(34px) saturate(190%);
-  -webkit-backdrop-filter: blur(34px) saturate(190%);
-  box-shadow: inset 0 0 0 1px var(--stroke-bright), var(--shadow-card);
-  overflow: hidden;
-}
-
-/* Colour wash that reads through the blur without muddying the text. */
-.brief::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    120deg,
-    color-mix(in srgb, var(--blue) 20%, transparent),
-    color-mix(in srgb, var(--purple) 15%, transparent) 46%,
-    color-mix(in srgb, var(--pink) 12%, transparent)
-  );
-  pointer-events: none;
-}
-
-.brief > * { position: relative; }
-
-.brief-greet {
-  font-size: 15.5px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-}
-
-.brief-date {
-  margin-top: 1px;
-  font-size: 11.5px;
-  color: var(--text-2);
-}
-
-.brief-body {
-  margin-top: 10px;
-  font-size: 12.5px;
-  line-height: 1.6;
-  -webkit-user-select: text;
-  user-select: text;
-}
-
-.brief-body p { margin: 0 0 6px; }
-.brief-body p:last-child { margin-bottom: 0; }
-.brief-body strong { font-weight: 650; }
-.brief-body ul { margin: 5px 0; padding-left: 17px; }
-.brief-body li { margin-bottom: 2px; }
-.brief-body code {
-  padding: 1px 5px;
-  border-radius: 5px;
-  background: var(--glass);
-  font-family: ui-monospace, 'SF Mono', monospace;
-  font-size: 11.5px;
-}
-
-.stat-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 12px;
-}
-
-.stat {
-  display: flex;
-  align-items: baseline;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: var(--r-pill);
-  background: var(--glass);
-  box-shadow: inset 0 0 0 1px var(--stroke-bright);
-}
-
-.stat-num {
-  font-size: 14px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-  color: var(--stat-color, var(--text-1));
-}
-
-.stat-label { font-size: 10.5px; color: var(--text-2); }
 
 /* ── Task cards ───────────────────────────────────────────────────────────── */
 
@@ -285,46 +204,36 @@ body {
   gap: 6px;
 }
 
+/* The project chip already carries the project's colour. A coloured spine as
+   well was the same information twice, and read as a heavy bar down every
+   card — so colour lives in one place only. */
 .task {
-  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 10px 12px 10px 14px;
+  padding: 11px 14px;
   border-radius: var(--r-card);
   background: var(--glass);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   box-shadow: inset 0 0 0 1px var(--stroke-bright), var(--shadow-card);
-  transition: background var(--fast), transform var(--fast);
-  overflow: hidden;
+  transition: background var(--fast);
 }
 
-.task:hover {
-  background: var(--glass-hover);
-  transform: translateY(-1px);
-}
+.task:hover { background: var(--glass-hover); }
 
-/* Project colour, carried as a spine rather than yet another chip. */
-.task::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--spine, transparent);
-}
-
-.task[data-done='true'] { opacity: 0.55; }
-.task[data-done='true']:hover { opacity: 0.8; }
+.task[data-done='true'] { opacity: 0.5; }
+.task[data-done='true']:hover { opacity: 0.75; }
 
 .task-main { flex: 1; min-width: 0; }
 
+/* Explicit line-height so the checkbox can be centred on the first line
+   deterministically rather than by eye. */
 .task-title {
   font-size: 13.5px;
+  line-height: 19px;
   font-weight: 500;
-  letter-spacing: -0.005em;
+  letter-spacing: -0.006em;
   word-break: break-word;
   -webkit-user-select: text;
   user-select: text;
@@ -337,9 +246,9 @@ body {
 }
 
 .task-notes {
-  margin-top: 3px;
+  margin-top: 4px;
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--text-2);
   -webkit-user-select: text;
   user-select: text;
@@ -349,8 +258,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 5px;
-  margin-top: 6px;
+  gap: 6px;
+  margin-top: 8px;
 }
 
 /* ── Chips ────────────────────────────────────────────────────────────────── */
@@ -379,22 +288,25 @@ body {
 
 /* ── Checkbox ─────────────────────────────────────────────────────────────── */
 
+/* Sized and offset so its centre lands on the centre of the title's first
+   line (19px line box, 17px control → 1px of top margin). */
 .check {
   position: relative;
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
   flex: none;
   border: 0;
   padding: 0;
   border-radius: 50%;
   background: transparent;
-  box-shadow: inset 0 0 0 1.5px var(--text-3);
+  box-shadow: inset 0 0 0 1.5px var(--check-ring);
   cursor: default;
-  transition: box-shadow var(--fast), background var(--fast), transform var(--fast);
+  transition: box-shadow var(--fast), background var(--fast);
 }
 
-.check:hover { box-shadow: inset 0 0 0 1.5px var(--tint); transform: scale(1.12); }
-.check:active { transform: scale(0.94); }
+.check:hover { box-shadow: inset 0 0 0 1.5px var(--tint); }
+.check:active { background: color-mix(in srgb, var(--tint) 18%, transparent); }
 
 .check[data-done='true'] {
   background: var(--green);
@@ -408,7 +320,7 @@ body {
   width: 10px;
   height: 10px;
   stroke: #fff;
-  stroke-width: 2.6;
+  stroke-width: 2.4;
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -555,12 +467,12 @@ body {
 
 /* ── Scrollbars ───────────────────────────────────────────────────────────── */
 
-::-webkit-scrollbar { width: 9px; }
+::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  border: 2.5px solid transparent;
+  border: 2px solid transparent;
   border-radius: var(--r-pill);
-  background: var(--text-3);
+  background: color-mix(in srgb, var(--text-3) 70%, transparent);
   background-clip: content-box;
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-2); background-clip: content-box; }
