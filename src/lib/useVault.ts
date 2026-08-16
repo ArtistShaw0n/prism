@@ -43,10 +43,20 @@ export function useVault(): UseVault {
   // Pick up edits made by Claude, the CLI, or file sync.
   useEffect(() => {
     let dispose: (() => void) | undefined;
+    let cancelled = false;
+
     void onVaultChanged((fresh) => commit(fresh)).then((fn) => {
-      dispose = fn;
+      // Cleanup can run before this resolves (StrictMode remounts, fast
+      // navigation). Without this the listener is registered after teardown
+      // and never removed.
+      if (cancelled) fn();
+      else dispose = fn;
     });
-    return () => dispose?.();
+
+    return () => {
+      cancelled = true;
+      dispose?.();
+    };
   }, [commit]);
 
   // Keep the menu bar count in step with whatever is on screen.
