@@ -1,7 +1,51 @@
-import { useEffect, useRef, useState } from 'react';
-import type { Priority, Task, Vault } from '../lib/types';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import type { Priority, Project, Task, Vault } from '../lib/types';
 import { isOverdue, relativeDue } from '../lib/dates';
 import { projectColor } from '../lib/vault';
+
+/**
+ * Tint any project name that appears inside a title, so the thing being worked
+ * on is findable at a glance — "Rebuild the **OERP** GitHub repo" rather than a
+ * uniform grey sentence.
+ *
+ * Matching is on the project names the vault already knows about, so nothing
+ * needs to be marked up by hand when a task is written.
+ */
+function highlightProjects(title: string, projects: Project[]): ReactNode[] {
+  const names = projects
+    .map((p) => p.name)
+    .filter((n) => n.trim().length > 1)
+    // Longest first so "Udvash Unmesh" wins over a bare "Udvash".
+    .sort((a, b) => b.length - a.length);
+  if (!names.length) return [title];
+
+  const colorOf = new Map(projects.map((p) => [p.name.toLowerCase(), p.color]));
+  const escaped = names.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const pattern = new RegExp(`(${escaped.join('|')})`, 'gi');
+
+  const out: ReactNode[] = [];
+  let cursor = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+
+  while ((match = pattern.exec(title)) !== null) {
+    if (match.index > cursor) out.push(title.slice(cursor, match.index));
+    out.push(
+      <span
+        key={key++}
+        className="title-mark"
+        style={{ '--mark': colorOf.get(match[0].toLowerCase()) } as React.CSSProperties}
+      >
+        {match[0]}
+      </span>,
+    );
+    cursor = match.index + match[0].length;
+  }
+
+  if (cursor === 0) return [title]; // nothing matched
+  if (cursor < title.length) out.push(title.slice(cursor));
+  return out;
+}
 
 const PRIORITY_COLOR: Record<Priority, string> = {
   0: 'var(--pink)',
@@ -75,7 +119,9 @@ export function TaskRow({ task, vault, editing, onToggle, onOpen, onClose, onPat
 
       <div className="task-main">
         <div className="task-head">
-          <span className="task-title">{task.title}</span>
+          <span className="task-title">
+            {done ? task.title : highlightProjects(task.title, vault.projects)}
+          </span>
 
           {/* The right-hand column: what you need at a glance, right-aligned. */}
           <span className="task-side">

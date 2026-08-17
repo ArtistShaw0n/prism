@@ -53,18 +53,18 @@ svg {
   --text-1: rgba(0, 0, 0, 0.88);
   --text-2: rgba(0, 0, 0, 0.52);
   --text-3: rgba(0, 0, 0, 0.32);
-  --glass: rgba(255, 255, 255, 0.84);
-  --glass-strong: rgba(255, 255, 255, 0.93);
-  --glass-hover: rgba(255, 255, 255, 0.97);
-  --field: rgba(0, 0, 0, 0.035);
-  --check-ring: rgba(0, 0, 0, 0.24);
-  --stroke: rgba(0, 0, 0, 0.07);
-  --stroke-bright: rgba(255, 255, 255, 0.9);
-  --shadow-card: 0 1px 1px rgba(0, 0, 0, 0.04), 0 4px 14px rgba(0, 0, 0, 0.055);
+  --glass: #ffffff;
+  --glass-strong: #ffffff;
+  --glass-hover: #fafafc;
+  --field: rgba(0, 0, 0, 0.04);
+  --check-ring: rgba(0, 0, 0, 0.26);
+  --stroke: rgba(0, 0, 0, 0.08);
+  --stroke-bright: rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 1px 1px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.05);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.05), 0 8px 22px rgba(0, 0, 0, 0.09);
   --shadow-pop: 0 8px 40px rgba(0, 0, 0, 0.15);
-  --card-filter: blur(20px) saturate(108%);
-  --aurora-alpha: 0.4;
-  --web-bg: #f1f1f5;
+  --aurora-alpha: 0.5;
+  --web-bg: #eceef2;
 }
 
 /* Dark tokens are declared twice on purpose: once for the system preference
@@ -75,20 +75,18 @@ svg {
     --text-1: rgba(255, 255, 255, 0.93);
     --text-2: rgba(255, 255, 255, 0.55);
     --text-3: rgba(255, 255, 255, 0.34);
-    --glass: rgba(46, 46, 51, 0.58);
-    --glass-strong: rgba(54, 54, 60, 0.74);
-    --glass-hover: rgba(66, 66, 73, 0.76);
+    --glass: #212127;
+    --glass-strong: #26262d;
+    --glass-hover: #2b2b33;
     --field: rgba(255, 255, 255, 0.06);
-    --check-ring: rgba(255, 255, 255, 0.3);
-    --stroke: rgba(255, 255, 255, 0.08);
-    --stroke-bright: rgba(255, 255, 255, 0.1);
-    /* Softer and wider than before — the old tight, dark shadow read as a hard
-       band under every card rather than as depth. */
-    --shadow-card: 0 1px 1px rgba(0, 0, 0, 0.16), 0 6px 22px rgba(0, 0, 0, 0.22);
-    --shadow-pop: 0 8px 40px rgba(0, 0, 0, 0.45);
-    --card-filter: blur(24px) saturate(180%);
-    --aurora-alpha: 0.44;
-    --web-bg: #15151a;
+    --check-ring: rgba(255, 255, 255, 0.32);
+    --stroke: rgba(255, 255, 255, 0.07);
+    --stroke-bright: rgba(255, 255, 255, 0.06);
+    --shadow-card: 0 1px 1px rgba(0, 0, 0, 0.24), 0 2px 6px rgba(0, 0, 0, 0.22);
+    --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 22px rgba(0, 0, 0, 0.34);
+    --shadow-pop: 0 8px 40px rgba(0, 0, 0, 0.5);
+    --aurora-alpha: 0.5;
+    --web-bg: #121216;
   }
 }
 
@@ -96,18 +94,18 @@ svg {
   --text-1: rgba(255, 255, 255, 0.93);
   --text-2: rgba(255, 255, 255, 0.55);
   --text-3: rgba(255, 255, 255, 0.34);
-  --glass: rgba(46, 46, 51, 0.58);
-  --glass-strong: rgba(54, 54, 60, 0.74);
-  --glass-hover: rgba(66, 66, 73, 0.76);
+  --glass: #212127;
+  --glass-strong: #26262d;
+  --glass-hover: #2b2b33;
   --field: rgba(255, 255, 255, 0.06);
-  --check-ring: rgba(255, 255, 255, 0.3);
-  --stroke: rgba(255, 255, 255, 0.08);
-  --stroke-bright: rgba(255, 255, 255, 0.1);
-  --shadow-card: 0 1px 1px rgba(0, 0, 0, 0.16), 0 6px 22px rgba(0, 0, 0, 0.22);
-  --shadow-pop: 0 8px 40px rgba(0, 0, 0, 0.45);
-  --card-filter: blur(24px) saturate(180%);
-  --aurora-alpha: 0.44;
-  --web-bg: #15151a;
+  --check-ring: rgba(255, 255, 255, 0.32);
+  --stroke: rgba(255, 255, 255, 0.07);
+  --stroke-bright: rgba(255, 255, 255, 0.06);
+  --shadow-card: 0 1px 1px rgba(0, 0, 0, 0.24), 0 2px 6px rgba(0, 0, 0, 0.22);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 22px rgba(0, 0, 0, 0.34);
+  --shadow-pop: 0 8px 40px rgba(0, 0, 0, 0.5);
+  --aurora-alpha: 0.5;
+  --web-bg: #121216;
 }
 
 body {
@@ -273,8 +271,6 @@ body {
   padding: 11px 13px;
   border-radius: var(--r-card);
   background: var(--glass);
-  backdrop-filter: var(--card-filter);
-  -webkit-backdrop-filter: var(--card-filter);
   box-shadow: inset 0 0 0 1px var(--stroke-bright), var(--shadow-card);
   transition: background var(--fast);
 }
@@ -312,6 +308,13 @@ body {
   word-break: break-word;
   -webkit-user-select: text;
   user-select: text;
+}
+
+/* The product a task is about, picked out inside the sentence. Weight plus
+   colour rather than a highlighter block, so the title still reads as a title. */
+.title-mark {
+  color: var(--mark, inherit);
+  font-weight: 680;
 }
 
 .task[data-done='true'] .task-title {
@@ -634,8 +637,6 @@ body {
   padding: 8px 10px;
   border-radius: var(--r-card);
   background: var(--glass-strong);
-  backdrop-filter: var(--card-filter);
-  -webkit-backdrop-filter: var(--card-filter);
   box-shadow: inset 0 0 0 1px var(--stroke-bright), var(--shadow-card);
   transition: box-shadow var(--fast);
 }
@@ -744,8 +745,6 @@ body {
   padding: 8px 10px 8px 15px;
   border-radius: var(--r-pill);
   background: var(--glass-strong);
-  backdrop-filter: var(--card-filter);
-  -webkit-backdrop-filter: var(--card-filter);
   box-shadow: inset 0 0 0 1px var(--stroke-bright), var(--shadow-pop);
   font-size: 12.5px;
   font-weight: 550;
