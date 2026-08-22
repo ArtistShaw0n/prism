@@ -17,6 +17,13 @@ import {
   loadVault, newId, nowISO, parseDate, saveVault, todayISO, vaultPath, writeAppConfig,
 } from './vault.mjs';
 
+// Piping into `head`/`less` closes stdout early. Without this, Node raises an
+// unhandled EPIPE and dumps a stack trace over whatever the user was reading.
+process.stdout.on('error', (err) => {
+  if (err.code === 'EPIPE') process.exit(0);
+  throw err;
+});
+
 // ── Terminal styling ──────────────────────────────────────────────────────────
 
 const tty = process.stdout.isTTY && !process.env.NO_COLOR;
@@ -100,7 +107,16 @@ function renderTask(t, { indent = '' } = {}) {
 
 const ORDER = { doing: 0, blocked: 1, todo: 2, inbox: 3, done: 4, cancelled: 5 };
 
-function sortTasks(tasks, day = todayISO()) {
+/** Display order: newest first, matching the app. */
+function sortTasks(tasks) {
+  return [...tasks].sort((a, b) => (b.order || 0) - (a.order || 0));
+}
+
+/**
+ * Ranking order — what to do next. Used for the digest headline only; the
+ * visible list stays in the order things were added.
+ */
+function byUrgency(tasks, day = todayISO()) {
   return [...tasks].sort((a, b) => {
     if (ORDER[a.status] !== ORDER[b.status]) return ORDER[a.status] - ORDER[b.status];
     const aLate = a.due && a.due <= day ? 0 : 1;
@@ -109,7 +125,6 @@ function sortTasks(tasks, day = todayISO()) {
     if (a.priority !== b.priority) return a.priority - b.priority;
     if (a.due && b.due && a.due !== b.due) return a.due < b.due ? -1 : 1;
     if (a.due !== b.due) return a.due ? -1 : 1;
-    // Newest first among otherwise-equal tasks, matching the app's ordering.
     return (b.order || 0) - (a.order || 0);
   });
 }
@@ -473,7 +488,7 @@ function autoDigest(vault, stats, day) {
 
   // Lead with the most pressing *actionable* item. A blocked task can't be
   // worked on, so it must never become the headline.
-  const top = sortTasks(open.filter((t) => t.status !== 'blocked'), day)[0];
+  const top = byUrgency(open.filter((t) => t.status !== 'blocked'), day)[0];
   if (top) {
     const why = top.due && top.due < day ? 'overdue' : top.priority <= 1 ? 'সবচেয়ে জরুরি' : 'পরের কাজ';
     lines.push(`${why} — \`${top.title}\`${top.project ? ` (**${top.project}**)` : ''}.`);

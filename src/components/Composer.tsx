@@ -140,7 +140,7 @@ export function Composer({ projects, onAdd }: Props) {
             <textarea
               className="composer-notes"
               value={notes}
-              rows={2}
+              rows={3}
               placeholder="Notes… (বাংলা / English দুটোই চলবে)"
               onChange={(e) => setNotes(e.target.value)}
               onKeyDown={(e) => {

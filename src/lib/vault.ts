@@ -268,26 +268,16 @@ function computeStreak(vault: Vault, day: string): number {
   return streak;
 }
 
-const STATUS_ORDER: Record<Status, number> = {
-  doing: 0, blocked: 1, todo: 2, inbox: 3, done: 4, cancelled: 5,
-};
-
-export function sortTasks(tasks: Task[], day = todayISO()): Task[] {
-  return [...tasks].sort((a, b) => {
-    if (STATUS_ORDER[a.status] !== STATUS_ORDER[b.status]) {
-      return STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
-    }
-    // Anything due today or earlier floats above undated work.
-    const aLate = a.due && a.due <= day ? 0 : 1;
-    const bLate = b.due && b.due <= day ? 0 : 1;
-    if (aLate !== bLate) return aLate - bLate;
-    if (a.priority !== b.priority) return a.priority - b.priority;
-    if (a.due && b.due && a.due !== b.due) return a.due < b.due ? -1 : 1;
-    if (Boolean(a.due) !== Boolean(b.due)) return a.due ? -1 : 1;
-    // Newest first among otherwise-equal tasks — something you just added
-    // belongs at the top of its group, not buried under everything older.
-    return b.order - a.order;
-  });
+/**
+ * Newest first, plainly.
+ *
+ * Priority and due date are shown on the card — a coloured dot and a date —
+ * rather than used to reorder. Ranking by them meant a task you had just typed
+ * could land halfway down the list, out of sight; in a list this short, seeing
+ * what you just added matters more than ordering by importance.
+ */
+export function sortTasks(tasks: Task[]): Task[] {
+  return [...tasks].sort((a, b) => b.order - a.order);
 }
 
 export function projectColor(vault: Vault, name?: string): string {

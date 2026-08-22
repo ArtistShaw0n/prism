@@ -233,7 +233,7 @@ function TaskEditor({
         <textarea
           className="edit-notes"
           value={notes}
-          rows={2}
+          rows={3}
           placeholder="Notes…"
           onChange={(e) => setNotes(e.target.value)}
           onKeyDown={(e) => {
